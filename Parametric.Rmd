@@ -1,5 +1,27 @@
+---
+title: "Parametric Bootstrapping"
+author: "CJ Carani, Dylan Hunt and Matt Kaznikov"
+date: "02-21-2024"
+output: pdf_document
+---
 
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE, fig.height = 3, fig.width = 6)
+library(tidyverse)
+library(GGally)
+library(knitr)
+library(gridExtra)
+library(MASS)
+library(gridExtra)  
+library(mnormt) 
+library(lme4) 
+library(lmerTest)
+library(knitr) 
+library(kableExtra)
+library(tidyverse)
+library(Matrix)
+```
 
-#test
-
-# test 21
+```{r}
+Airbnb <- read_csv("https://raw.githubusercontent.com/proback/BeyondMLR/master/data/airbnb.csv")
+```
