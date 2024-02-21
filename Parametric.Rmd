@@ -25,3 +25,19 @@ library(Matrix)
 ```{r}
 Airbnb <- read_csv("https://raw.githubusercontent.com/proback/BeyondMLR/master/data/airbnb.csv")
 ```
+
+Use the Airbnb to compare models
+maybe llsr vs lme?
+```{r}
+#llsr model
+m1 <- lm(data = Airbnb, price ~ BikeScore + WalkScore + TransitScore)
+
+#lme model
+m2 <- lmer(data = Airbnb, price ~ BikeScore + WalkScore + TransitScore + (1|neighborhood))
+```
+
+Data for a model without many observations 
+
+GLME bootstrapping
+
+
