@@ -84,7 +84,6 @@ quantile(bootstrap_b1, c(.025, .975))
 ```
 
 
-<<<<<<< HEAD
 GLME bootstrapping
 =======
 # Background
@@ -96,7 +95,3 @@ GLME bootstrapping
 # Results
 
 # Conclusions
-
->>>>>>> 15298962ead25ff9a230899f3be134b05f96333c
-
->>>>>>> 867c231afc3c8f0c2c19161847331385cb1e096a
