@@ -40,4 +40,14 @@ Data for a model without many observations
 
 GLME bootstrapping
 
+# Background
+
+# Data
+
+# Methods
+
+# Results
+
+# Conclusions
+
 
