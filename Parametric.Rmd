@@ -42,5 +42,18 @@ Data for a model without many observations (Elephants)
 elephants <- read_csv("https://raw.githubusercontent.com/proback/BeyondMLR/master/data/elephant.csv")
 ```
 
+<<<<<<< HEAD
 GLME bootstrapping
+=======
+# Background
+
+# Data
+
+# Methods
+
+# Results
+
+# Conclusions
+
+>>>>>>> 15298962ead25ff9a230899f3be134b05f96333c
 
