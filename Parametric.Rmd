@@ -26,3 +26,77 @@ library(Matrix)
 Airbnb <- read_csv("https://raw.githubusercontent.com/proback/BeyondMLR/master/data/airbnb.csv")
 ```
 
+<<<<<<< HEAD
+=======
+Use the Airbnb to compare models
+maybe llsr vs lme?
+```{r}
+#llsr model
+m1 <- lm(data = Airbnb, price ~ BikeScore + WalkScore + TransitScore)
+
+#lme model
+m2 <- lmer(data = Airbnb, price ~ BikeScore + WalkScore + TransitScore + (1|neighborhood))
+```
+
+Data for a model without many observations (Elephants)
+
+```{r}
+elephants <- read_csv("https://raw.githubusercontent.com/proback/BeyondMLR/master/data/elephant.csv")
+```
+
+```{r}
+E_M1 <- lm(MATINGS ~ AGE, data = elephants)
+summary(E_M1)
+
+elephants <- elephants %>% mutate(age2 = AGE*AGE)
+E_M2 <- lm(MATINGS ~ AGE + age2, data = elephants)
+summary(E_M2)
+```
+```{r}
+# record estimates from the model
+b0 <- E_M1$coefficients[1]
+b1 <- E_M1$coefficients[2]
+sigma <- summary(E_M1)$sigma
+nreps <- 10000
+bootstrap_b0 <- c(rep(NA, nreps))
+bootstrap_b1 <- c(rep(NA, nreps))
+bootstrap_sigma <- c(rep(NA, nreps))
+E_Data <- elephants
+# simulate data and fit model
+for (i in 1:nreps){
+   # simulate new data
+E_Data <- E_Data %>% mutate(SimSpeed = b0 + b1*AGE + rnorm(n= nrow(elephants), mean=0, sd=sigma))
+Mb <- lm(data=E_Data, SimSpeed~AGE)   #fit model to simulated data
+bootstrap_b0[i] <- Mb$coefficients[1]        #record b0 from model on simulated data
+bootstrap_b1[i] <- Mb$coefficients[2]        #record b1 from model on simulated data
+bootstrap_sigma[i] <- summary(Mb)$sigma      #record sigma from model on simulated data
+}
+Bootstrap_Results <- data.frame(bootstrap_b0, bootstrap_b1, bootstrap_sigma)
+```
+
+```{r}
+p1 <- ggplot(data=Bootstrap_Results, aes(x=bootstrap_b1)) + geom_histogram() + geom_vline(xintercept=quantile(bootstrap_b1, c(.025, .975)), color="red")
+p1
+```
+
+```{r}
+quantile(bootstrap_b1, c(.025, .975))
+```
+
+
+<<<<<<< HEAD
+GLME bootstrapping
+=======
+# Background
+
+# Data
+
+# Methods
+
+# Results
+
+# Conclusions
+
+>>>>>>> 15298962ead25ff9a230899f3be134b05f96333c
+
+>>>>>>> 867c231afc3c8f0c2c19161847331385cb1e096a
