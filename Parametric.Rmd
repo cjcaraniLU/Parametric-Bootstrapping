@@ -26,6 +26,8 @@ library(Matrix)
 Airbnb <- read_csv("https://raw.githubusercontent.com/proback/BeyondMLR/master/data/airbnb.csv")
 ```
 
+<<<<<<< HEAD
+=======
 Use the Airbnb to compare models
 maybe llsr vs lme?
 ```{r}
@@ -143,7 +145,6 @@ p1
 
 
 
-<<<<<<< HEAD
 GLME bootstrapping
 =======
 # Background
@@ -155,6 +156,3 @@ GLME bootstrapping
 # Results
 
 # Conclusions
-
->>>>>>> 15298962ead25ff9a230899f3be134b05f96333c
-
