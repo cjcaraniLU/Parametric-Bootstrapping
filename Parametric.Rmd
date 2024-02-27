@@ -25,3 +25,4 @@ library(Matrix)
 ```{r}
 Airbnb <- read_csv("https://raw.githubusercontent.com/proback/BeyondMLR/master/data/airbnb.csv")
 ```
+
