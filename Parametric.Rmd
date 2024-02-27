@@ -120,7 +120,54 @@ p1
 
 
 
-GLME bootstrapping
+```{r}
+## Multilevel Generalized Linear Model for Bootstrapping
+
+# Reading in Basketball Refs Data
+refdata <- read.csv("https://raw.githubusercontent.com/proback/BeyondMLR/master/data/basketball0910.csv")
+# Model 1 with random slope, but no random Effect
+glm1 <- glmer(foul.home ~ foul.diff + (1|game), family = binomial(link="logit"), data = refdata)
+# Model 2 with a random slope and a random effect for foul.diff
+glm2 <- glmer(foul.home ~ foul.diff + (foul.diff|game), family = binomial(link="logit"), data = refdata)
+
+# Compare Model's
+anova(glm1,glm2)
+```
+
+```{r}
+# Bootstrapping
+set.seed(02272022)
+nreps <- 100
+ChiSq <- rep(NA, nreps)
+for(i in 1:nreps){
+SimData <- drop(simulate(glm1))  # this command simulates data directly from a model
+glm1B <-refit(glm1, newresp=SimData)  # refits glm1 to simulated data
+glm2B <-refit(glm2, newresp=SimData)  # refits glm2 to simulated data
+ChiSq[i] <- anova(glm1B,glm2B)$Chisq[2]
+}
+ChiSq<- write.csv(ChiSq, file="ChiSq.csv")
+```
+
+```{r}
+p <- ggplot(data=data.frame(ChiSq), aes(x=ChiSq)) + geom_histogram() + 
+  geom_vline(xintercept = 5.4682, color="red", linetype="dotted", size=2) 
+p
+```
+
+```{r}
+mean(ChiSq>5.4682)
+```
+
+Level 1 Variables:
+  Observational Unit: Fouls
+  Variables:
+    foul.num, foul.home, foul.vis, foul.diff, score.diff, lead.vis, lead.home, previous.foul.home,          previous.foul.vis, foul.type, personal, offensive, time
+Level 2 Variables:
+  Observational Unit: Game
+  Variables:
+    Game, Date, Visitor, Home Team
+    
+
 =======
 # Background
 
