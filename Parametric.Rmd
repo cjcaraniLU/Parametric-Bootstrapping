@@ -162,7 +162,7 @@ anova(glm1,glm2)
 ```{r}
 # Bootstrapping
 set.seed(02272022)
-nreps <- 100
+nreps <- 1000
 ChiSq <- rep(NA, nreps)
 for(i in 1:nreps){
 SimData <- drop(simulate(glm1))  # this command simulates data directly from a model
@@ -174,7 +174,8 @@ ChiSq<- write.csv(ChiSq, file="ChiSq.csv")
 ```
 
 ```{r}
-p <- ggplot(data=data.frame(ChiSq), aes(x=ChiSq)) + geom_histogram() + 
+ChiSq <- read.csv("ChiSq.csv")
+p <- ggplot(data=data.frame(ChiSq), aes(x=x)) + geom_histogram() + 
   geom_vline(xintercept = 5.4682, color="red", linetype="dotted", size=2) 
 p
 ```
