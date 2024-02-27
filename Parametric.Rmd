@@ -145,6 +145,7 @@ elephants <- elephants %>% mutate(age2 = AGE*AGE)
 E_M2 <- lm(MATINGS ~ AGE + age2, data = elephants)
 summary(E_M2)
 ```
+#Bootstrap for Model 1 Estimates
 ```{r}
 # record estimates from the model
 b0 <- E_M1$coefficients[1]
@@ -158,8 +159,8 @@ E_Data <- elephants
 # simulate data and fit model
 for (i in 1:nreps){
    # simulate new data
-E_Data <- E_Data %>% mutate(SimSpeed = b0 + b1*AGE + rnorm(n= nrow(elephants), mean=0, sd=sigma))
-Mb <- lm(data=E_Data, SimSpeed~AGE)   #fit model to simulated data
+E_Data <- E_Data %>% mutate(SimMatings = b0 + b1*AGE + rnorm(n= nrow(elephants), mean=0, sd=sigma))
+Mb <- lm(data=E_Data, SimMatings~AGE)   #fit model to simulated data
 bootstrap_b0[i] <- Mb$coefficients[1]        #record b0 from model on simulated data
 bootstrap_b1[i] <- Mb$coefficients[2]        #record b1 from model on simulated data
 bootstrap_sigma[i] <- summary(Mb)$sigma      #record sigma from model on simulated data
@@ -175,6 +176,66 @@ p1
 ```{r}
 quantile(bootstrap_b1, c(.025, .975))
 ```
+
+```{r}
+# record estimates from the model
+b0 <- E_M2$coefficients[1]
+b1 <- E_M2$coefficients[2]
+b2 <- E_M2$coefficients[3]
+sigma <- summary(E_M2)$sigma
+nreps <- 10000
+bootstrap_b0 <- c(rep(NA, nreps))
+bootstrap_b1 <- c(rep(NA, nreps))
+bootstrap_b2 <- c(rep(NA, nreps))
+bootstrap_sigma <- c(rep(NA, nreps))
+E_Data <- elephants
+# simulate data and fit model
+for (i in 1:nreps){
+   # simulate new data
+E_Data <- E_Data %>% mutate(SimMatings = b0 + b1*AGE + b2*age2 + rnorm(n= nrow(elephants), mean=0, sd=sigma))
+Mb <- lm(data=E_Data, SimMatings~AGE)        #fit model to simulated data
+bootstrap_b0[i] <- Mb$coefficients[1]        #record b0 from model on simulated data
+bootstrap_b1[i] <- Mb$coefficients[2]        #record b1 from model on simulated data
+bootstrap_b2[i] <- Mb$coefficients[3]        #record b2 from model on simulated data
+bootstrap_sigma[i] <- summary(Mb)$sigma      #record sigma from model on simulated data
+}
+Bootstrap_Results <- data.frame(bootstrap_b0, bootstrap_b1, bootstrap_b2, bootstrap_sigma)
+```
+
+```{r}
+quantile(bootstrap_b2, c(.025, .975))
+```
+
+```{r}
+anova(E_M1, E_M2)
+```
+
+
+```{r}
+set.seed(02272022)
+# record estimates from reduced model
+b0 <- E_M1$coefficients[1]
+b1 <- E_M1$coefficients[2]
+sigma <- summary(E_M1)$sigma
+nreps <- 10000
+bootstrap_F <- c(rep(NA, nreps))
+B_Data <- elephants
+# simulate data and fit model
+for (i in 1:nreps){
+   # simulate new data from reduced model
+B_Data <- B_Data %>% mutate(SimMatings = b0 + b1*AGE + rnorm(n= nrow(elephants), mean=0, sd=sigma))
+Mb_Red <- lm(data=B_Data, SimMatings~AGE)   #fit reduced model to simulated data
+Mb_Full <- lm(data=B_Data, SimMatings ~ AGE + age2)   #fit full model to simulated data
+bootstrap_F[i] <- anova(Mb_Full, Mb_Red)$F[2]
+}
+Bootstrap_Results <- data.frame(bootstrap_F)
+```
+
+```{r}
+p1 <- ggplot(data=Bootstrap_Results, aes(x=bootstrap_F)) + geom_histogram() + geom_vline(xintercept = 0.4187, color="red", linetype="dotted", size=2) 
+p1
+```
+
 
 
 GLME bootstrapping
