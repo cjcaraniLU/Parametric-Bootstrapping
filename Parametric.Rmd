@@ -36,8 +36,11 @@ m1 <- lm(data = Airbnb, price ~ BikeScore + WalkScore + TransitScore)
 m2 <- lmer(data = Airbnb, price ~ BikeScore + WalkScore + TransitScore + (1|neighborhood))
 ```
 
-Data for a model without many observations 
+Data for a model without many observations (Elephants)
+
+```{r}
+elephants <- read_csv("https://raw.githubusercontent.com/proback/BeyondMLR/master/data/elephant.csv")
+```
 
 GLME bootstrapping
-
 
