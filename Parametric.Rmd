@@ -37,7 +37,24 @@ The first step for comparing LME models was creating the full model comprising o
 For the elephant dataset there were two models that were created. Because of the lack of explanatory variables both models used age as explanatory variables. However, the second, full, model used the variable age2 which was the age of the elephants squared. This was done to see if there was a quadratic relationship between age of the elephants and their number of matings. Bootstrapping is essential for this test because there are doubts about the size of the dataset and if the model statistics that are calculated can be trusted because of how small the dataset is. The first bootstrapping procedure used was to calculate how significant our explanatory variable age is to multiple models that use randomly simulated datasets. The confidence interval was also calculated for the variable age. The next bootstrapping procedure used was to determine if the second, full model was significant enough against the reduced model. The process first calculated the the estimates for the reduced model then we use the estimates to create the simulated data many times. During each simulation we track the estimates of each model and their F-statistic. This is important because we will compare the first F-statistic created from the original dataset to the 10,000 randomly simulated F-statistics.
 
 **Model Comparison for Multilevel GLM:**
+The referees dataset allowed us to see how parametric bootstrapping can help us with a multilevel generalized linear model. The bootstrapping taking place in this part of the report is similar to the bootstrapping above, but we are using a more complicated model structure. Additionally, instead of testing for the randomly simulated f-statistic, we are randomly simulating 10,000 chi squared values consistent with the model to see which model is better. This is a continuation of all the work we have done with the other types of models, but we are able to study how bootstrapping can help with generalized linear models. 
 
+As done previously, a reduced and a full model was created. The reduced included one explanatory variable and a random slope. This random slope allows us to account for the difference associated with each basketball game. This term was chosen because each basketball game has many factors that can effect the fouls in a game, most notably different referees. A more complex model was then created that used all the previous variables and random slope, but added a random effect for foul difference. After creating the models we ran a bootstrap simulation 10,000 times that created data that fit the models and used this to estimate 10,000 chi squared values. These values were then graphed in a histogram so that we could view if our measured value occurred due to chance. This is important for viewing if our advanced model is better than our reduced model.
+
+# Data
+
+**Linear Model Comparison:**
+When we compared the Full Model to the Reduced Model we are using the Airbnb data which we have used previously in class. This dataset has just over 1500 observations and 14 variables. In the first model which was labeled as "reduced" we used a linear model hence "lm". In this model, the dependent variable also known as the Response Variable is Price. We are trying to predict the Price of an Airbnb based off of the independent variables commonly referred to as the Explanatory Variables which in this case are bedrooms and room types.
+
+**Linear Model Comparison:**
+The dataset used for demonstrate an example of a model without large data is the Elephants dataset created by Poole (1989). This dataest was used to figure out factors that contribute to the amount of matings that an elephant does in a given year. The only explanatory factor is AGE of the elephant while the response variable is MATINGS. The only data modifications that were made was the addition of another column that accounted for the AGE variable being squared which is labeled age2. The biggest concern about this data is the lack of observations within the dataset. There are only 41 observations which will not allow for concrete conclusions about the models that will be created. This is a perfect example for parametric bootstrapping.
+
+**Model Comparison for Multilevel GLM:**
+The dataset used to for multilevel generalized linear model parametric bootstrapping was the Referees dataset. This data compiles fouls from 340 college basketball games from 2009-2010. In total 4,972 fouls occurred giving us a large starting data with many occurrences. The Referees dataset's goal was to find out the likelihood for given teams to be called for a foul in different situations. To do this various variables like home team, visiting team, number of fouls, date, foul difference, game, home team fouls, and visitor fouls were used. 
+
+All of these variables created two different levels of data. It is important to distinguish these levels to help interpret the results of our bootstrapping. The first level is the one with more occurrences and measured the characteristics of each individual fouls, while the second level measured the characteristics of each individual game. As you can imagine there are usually many fouls in a game, so there are many fouls with the same game characteristics in the dataset. Variables like home team, visiting team, date, and game are specific to each game and thus are second level variables. While variables like foul differential are specific to a given foul in the game and thus are level one variables. For our models we will be concerned with the variables home team fouls, foul difference, and game.
+
+There are no major concerns with this data, but the goal is to use parametric bootstrapping to see if a more complicated model with a random effect term is better than a reduced model without one.
 
 Comparing LME models using Parametric Bootstrapping
 ```{r}
@@ -334,16 +351,6 @@ Level 2 Variables:
     Game, Date, Visitor, Home Team
     
 
-=======
-# Background
-
-
-# Data
-(Matt)
-When we compared the Full Model to the Reduced Model we are using the Airbnb data which we have used previously in class. This data set has just over 1500 observations and 14 variables. In the first model which was labeled as "reduced" we used a linear model hence "lm". In this model, the dependent variable also known as the Response Variable is Price. We are trying to predict the Price of an Airbnb based off of the independent variables commonly referred to as the Explanatory Variables which in this case are bedrooms and room types.
-a
-
-CJ: The dataset used for demonstrate an example of a model without large data is the Elephants dataset created by Poole (1989). This dataest was used to figure out factors that contribute to the amount of matings that an elelphant does in a given year. The only explanatory factor is AGE of the elephant while the respone variable is MATINGS. The only data modifications that were made was the addition of another column that accounted for the AGE variable being squared which is labeled age2. The biggest concern about this data is the lack of observations within the dataset. There are only 41 observations which will not allow for concrete conclusions about the models that will be created. This is a perfect example for parametric bootstrapping.
 
 # Results
 
