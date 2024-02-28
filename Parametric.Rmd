@@ -40,6 +40,13 @@ m2 <- lmer(data = Airbnb, price ~ BikeScore + WalkScore + TransitScore + (1|neig
 
 Data for a model without many observations (Elephants)
 
+### Background
+"Bootstrapping methods are a numerical approach to generating confidence intervals that use either resampled data or simulated data to estimate the sampling distribution of the maximum likelihood parameter estimates"
+
+
+
+### Data
+
 ```{r}
 elephants <- read_csv("https://raw.githubusercontent.com/proback/BeyondMLR/master/data/elephant.csv")
 ```
