@@ -183,10 +183,7 @@ mean(bootstrap_F>34.276)
 
 Data for a model without many observations (Elephants)
 
-### Background
-W.A. Nelson from the Encyclopedia of Ecology states, "Bootstrapping methods are a numerical approach to generating confidence intervals that use either resampled data or simulated data to estimate the sampling distribution of the maximum likelihood parameter estimates". This definition is the backbone reasoning on why and when a statistician should incorporate bootstrapping. The overall idea is that bootstrapping can greatly improve your findings and conclusions of a model's confidence intervals, p-values, F-statistics and hypothesis testing. Bootstrapping generally is also used when there is a lack of observations or there is data missing within the dataset. Bootstrapping solves this issue by resampling the data based off of the current observations that we as statisticians already have to generate plausible values that will allow us to create more concrete assumptions about our dataset. The simulated data will provide us with better reasoning on how well our models perfrom and which model to use by creating a comparison with the use of the new data. Non-parametric bootstrapping uses a technique called sampling with replacement. This procedure randomly selects observations, while putting those observations back into the real dataset.This will create a new sample that will have the same size as the real dataset. These steps are then repeated thousands of time to generate many different datasets for your model to use. The generated datasets use the real dataset to create new observations for our simulated datasets. Parametric bootstrapping uses a model's estimates to generate new datasets. These are the steps to use parametric bootstrapping: 1) Fit a model to the original dataset and record that model's parameters using their estimated values. 2) Next using the recorded estimated parameter values simulate many datasets. 3) For each newly created dataset, record each of the estimated parameters. 4) Then calculate statistics that are important for your conclusions. (p-values, F-statistic, t-statistics, etc.) 5) Create confidence intervals based off of the simulated values. There are multiple reasons for why we would create simulated data using parametric bootstrapping. The major reasons could be if we do not have enough data from our original dataset and need more to create conclusive evidence for a specific idea or hypothesis. Another is if we have doubts about our model assumptions. These doubts could be about normal distribution or skewness within the data.
 
-### Data
 ```{r}
 elephants <- read_csv("https://raw.githubusercontent.com/proback/BeyondMLR/master/data/elephant.csv")
 ```
@@ -232,9 +229,6 @@ p1
 quantile(bootstrap_b1, c(.025, .975))
 ```
 
-```{r}
-quantile(bootstrap_b2, c(.025, .975))
-```
 
 ```{r}
 anova(E_M1, E_M2)
@@ -318,7 +312,8 @@ Level 2 Variables:
     
 
 =======
-# Background
+### Background
+W.A. Nelson from the Encyclopedia of Ecology states, "Bootstrapping methods are a numerical approach to generating confidence intervals that use either resampled data or simulated data to estimate the sampling distribution of the maximum likelihood parameter estimates". This definition is the backbone reasoning on why and when a statistician should incorporate bootstrapping. The overall idea is that bootstrapping can greatly improve your findings and conclusions of a model's confidence intervals, p-values, F-statistics and hypothesis testing. Bootstrapping generally is also used when there is a lack of observations or there is data missing within the dataset. Bootstrapping solves this issue by resampling the data based off of the current observations that we as statisticians already have to generate plausible values that will allow us to create more concrete assumptions about our dataset. The simulated data will provide us with better reasoning on how well our models perfrom and which model to use by creating a comparison with the use of the new data. Non-parametric bootstrapping uses a technique called sampling with replacement. This procedure randomly selects observations, while putting those observations back into the real dataset.This will create a new sample that will have the same size as the real dataset. These steps are then repeated thousands of time to generate many different datasets for your model to use. The generated datasets use the real dataset to create new observations for our simulated datasets. Parametric bootstrapping uses a model's estimates to generate new datasets. These are the steps to use parametric bootstrapping: 1) Fit a model to the original dataset and record that model's parameters using their estimated values. 2) Next using the recorded estimated parameter values simulate many datasets. 3) For each newly created dataset, record each of the estimated parameters. 4) Then calculate statistics that are important for your conclusions. (p-values, F-statistic, t-statistics, etc.) 5) Create confidence intervals based off of the simulated values. There are multiple reasons for why we would create simulated data using parametric bootstrapping. The major reasons could be if we do not have enough data from our original dataset and need more to create conclusive evidence for a specific idea or hypothesis. Another is if we have doubts about our model assumptions. These doubts could be about normal distribution or skewness within the data.
 
 # Methods
 LME Model Comparison
@@ -327,11 +322,14 @@ LME Model Comparison
   The first step for comparing LME models was creating the full model comprising of the variables bedrooms, room_type, and overall_satisfaction with a random slope for neighborhood. The random slope is added to account for the random derivation of price for each neighborhood. This model serves as our more complex model for the act of comparing a reduced model to a more complicated model using parametric bootstrapping.
   Then, we created a reduced model comprising of the variables bedrooms and room_type, without a random slope variables. This model is predicted to not account for as much variability in the model, but will help us determine if our full model is too complicated.
 
-CJ:
+Model without Large Dataset and Comparison:
+For the elephant dataset there were two models that were created. Becuase of the lack of explanatory variables both models used age as explanatory variables. However, the second, full, model used the variable age2 which was the age of the elephants squared. This was done to see if there was a quadratic relationship between age of the elephants and their number of matings. Bootstrapping is essential for this test becuase there are doubts about the size of the dataset and if the model statistics that are calculated can be trusted becuase of how small the dataset is. The first bootstrapping procedure used was to calculate how significant our explanatory variable age is to multiple models that use randomly simulated datasets. The confidence interval was also calculated for the variable age. The next bootstrapping procedure used was to determine if the second, full model was signifcant enough against the reduced model. The process first calculated the the estimates for the reduced model then we use the estimates to create the simulated data many times. During each simulation we track the estimates of each model and their F-statistic. This is important because we will compare the first F-statistic created from the original dataset to the 10,000 randomly simulated F-statistics.
+
 
 Dylan:
 
 # Data
+CJ: The dataset used for demonstrate an example of a model without large data is the Elephants dataset created by Poole (1989). This dataest was used to figure out factors that contribute to the amount of matings that an elelphant does in a given year. The only explanatory factor is AGE of the elephant while the respone variable is MATINGS. The only data modifications that were made was the addition of another column that accounted for the AGE variable being squared which is labeled age2. The biggest concern about this data is the lack of observations within the dataset. There are only 41 observations which will not allow for concrete conclusions about the models that will be created. This is a perfect example for parametric bootstrapping.
 
 # Results
 
