@@ -226,6 +226,7 @@ mean(bootstrap_F>34.276)
 ```
 ### Linear Model Comparison Results
 
+
 ## Model without Large Dataset and Comparison:
 
 ```{r}
@@ -370,4 +371,3 @@ Parametric Bootstrapping is useful for generating simulated data from model esti
 https://www.sciencedirect.com/topics/earth-and-planetary-sciences/bootstrapping#:~:text=Parametric%20bootstrapping%20works%20as%20follows,the%20most%20likely%20parameter%20estimates
 https://stat455-w22.github.io/stat455-w22-notes/multilevel-generalized-linear-models.html#parametric-bootstrapping
 https://bookdown.org/roback/bookdown-BeyondMLR/ch-GLMM.html#cs:refs
-
