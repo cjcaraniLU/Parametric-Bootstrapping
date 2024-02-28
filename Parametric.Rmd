@@ -76,6 +76,14 @@ summary(Bootstrap_Results)
 ```
 
 ```{r}
+#For Reduced Model
+p1 <- ggplot(data=Bootstrap_Results, aes(x=bootstrap_b0)) + geom_histogram() + geom_vline(xintercept=quantile(bootstrap_b0, c(.025, .975)), color="red")
+p1
+
+quantile(bootstrap_b0, c(.025, .975))
+```
+
+```{r}
 # Model 2 - LME Comparison FULL MODEL
 full <- lmer(data = Airbnb, price ~ bedrooms + room_type + overall_satisfaction + (1|neighborhood))
 summary(full)
@@ -127,6 +135,14 @@ summary(Bootstrap_Results_M2)
 ```
 
 ```{r}
+#For Full Model
+p2 <- ggplot(data=Bootstrap_Results_M2, aes(x=bootstrap_b0)) + geom_histogram() + geom_vline(xintercept=quantile(bootstrap_b0, c(.025, .975)), color="red")
+p2
+
+quantile(bootstrap_b0, c(.025, .975))
+```
+
+```{r}
 anova(full, reduced)
 ```
 ```{r}
@@ -151,20 +167,15 @@ bootstrap_F[i] <- anova(Mb_Full, Mb_Red)$F[2]
 Bootstrap_Results <- data.frame(bootstrap_F)
 ```
 Confidence Intervals for Reduced and Full Models...
-```{r}
-#For Reduced Model
-p1 <- ggplot(data=Bootstrap_Results, aes(x=bootstrap_b0)) + geom_histogram() + geom_vline(xintercept=quantile(bootstrap_b0, c(.025, .975)), color="red")
-p1
 
-```
+
+
+
 
 ```{r}
-#For Full Model
-p2 <- ggplot(data=Bootstrap_Results_M2, aes(x=bootstrap_b0)) + geom_histogram() + geom_vline(xintercept=quantile(bootstrap_b0, c(.025, .975)), color="red")
-p2
+
 
 ```
-
 
 Data for a model without many observations (Elephants)
 
