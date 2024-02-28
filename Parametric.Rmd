@@ -342,7 +342,8 @@ CJ:
 Dylan:
 
 # Data
-
+(Matt)
+When we compared the Full Model to the Reduced Model we are using the Airbnb data which we have used previously in class. This data set has just over 1500 observations and 14 variables. In the first model which was labeled as "reduced" we used a linear model hence "lm". In this model, the dependent variable also known as the Response Variable is Price. We are trying to predict the Price of an Airbnb based off of the independent variables commonly referred to as the Explanatory Variables which in this case are bedrooms and room types.
 # Results
 
 # Conclusions
