@@ -338,7 +338,7 @@ p
 ```
 
 ```{r}
-mean(ChiSq>5.4682)
+mean(ChiSq$x>5.4682)
 ```
 
 Level 1 Variables:
