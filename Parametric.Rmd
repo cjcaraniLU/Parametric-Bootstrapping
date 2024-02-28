@@ -85,17 +85,18 @@ quantile(bootstrap_b0, c(.025, .975))
 
 ```{r}
 # Model 2 - LME Comparison FULL MODEL
-full <- lmer(data = Airbnb, price ~ bedrooms + room_type + overall_satisfaction + (1|neighborhood))
+full <- lm(data = Airbnb, price ~ bedrooms + room_type + overall_satisfaction + reviews)
 summary(full)
 ```
 
 ```{r}
 # Record estimates from the original model
-b0 <- fixef(full)[1]
-b1 <- fixef(full)[2]
-b2 <- fixef(full)[3]
-b3 <- fixef(full)[4]
-b4 <- fixef(full)[5]
+b0 <- coef(full)[1]
+b1 <- coef(full)[2]
+b2 <- coef(full)[3]
+b3 <- coef(full)[4]
+b4 <- coef(full)[5]
+b5 <- coef(full)[6]
 sigma <- summary(full)$sigma
 nreps <- 1000
 
@@ -105,6 +106,7 @@ bootstrap_b1 <- numeric(nreps)
 bootstrap_b2 <- numeric(nreps)
 bootstrap_b3 <- numeric(nreps)
 bootstrap_b4 <- numeric(nreps)
+bootstrap_b5 <- numeric(nreps)
 bootstrap_sigma <- numeric(nreps)
 
 # Copy the original data for simulation
@@ -113,22 +115,23 @@ B_Data <- Airbnb
 # Simulate data and fit model
 for (i in 1:nreps) {
   # Simulate new data
-  B_Data$SimPrice <- b0 + (b1*B_Data$bedrooms) + b2 + b3 + (b4*B_Data$overall_satisfaction) + rnorm(n = nrow(Airbnb), mean = 0, sd = sigma)
+  B_Data$SimPrice <- b0 + (b1*B_Data$bedrooms) + b2 + b3 + (b4*B_Data$overall_satisfaction) + b5 + rnorm(n = nrow(Airbnb), mean = 0, sd = sigma)
   
   # Fit mixed-effects model to simulated data
-  Mb2 <- lmer(SimPrice ~ bedrooms + room_type + overall_satisfaction + (1|neighborhood), data = B_Data)
+  Mb2 <- lm(SimPrice ~ bedrooms + room_type + overall_satisfaction + reviews, data = B_Data)
   
   # Record fixed effects and sigma from the model on simulated data
-  bootstrap_b0[i] <- fixef(Mb2)[1]
-  bootstrap_b1[i] <- fixef(Mb2)[2]
-  bootstrap_b2[i] <- fixef(Mb2)[3]
-  bootstrap_b3[i] <- fixef(Mb2)[4]
-  bootstrap_b4[i] <- fixef(Mb2)[5]  
+  bootstrap_b0[i] <- coef(Mb2)[1]
+  bootstrap_b1[i] <- coef(Mb2)[2]
+  bootstrap_b2[i] <- coef(Mb2)[3]
+  bootstrap_b3[i] <- coef(Mb2)[4]
+  bootstrap_b4[i] <- coef(Mb2)[5]  
+  bootstrap_b5[i] <- coef(Mb2)[5] 
   bootstrap_sigma[i] <- summary(Mb2)$sigma
 }
 
 # Create a data frame with bootstrap results
-Bootstrap_Results_M2 <- data.frame(bootstrap_b0, bootstrap_b1, bootstrap_b2, bootstrap_b3, bootstrap_b3, bootstrap_sigma)
+Bootstrap_Results_M2 <- data.frame(bootstrap_b0, bootstrap_b1, bootstrap_b2, bootstrap_b3, bootstrap_b4, bootstrap_b5, bootstrap_sigma)
 
 # View the summary of bootstrap results
 summary(Bootstrap_Results_M2)
@@ -148,7 +151,7 @@ anova(full, reduced)
 
 ```{r}
 M_Red <- lm(price ~ bedrooms + room_type, data = Airbnb)
-M_Full <- lm(price ~ bedrooms + room_type + overall_satisfaction, data=Airbnb)
+M_Full <- lm(price ~ bedrooms + room_type + overall_satisfaction + reviews, data=Airbnb)
 anova(M_Red, M_Full)
 ```
 
@@ -168,14 +171,14 @@ for (i in 1:nreps){
    # simulate new data from reduced model
 B_Data <- B_Data %>% mutate(SimPrice = b0 + b1*bedrooms + b2 + b3 + rnorm(n= nrow(Airbnb), mean=0, sd=sigma))
 Mb_Red <- lm(data=B_Data, SimPrice ~ bedrooms + room_type)   #fit reduced model to simulated data
-Mb_Full <- lm(data=B_Data, SimPrice ~ bedrooms + room_type + overall_satisfaction)   #fit full model to simulated data
+Mb_Full <- lm(data=B_Data, SimPrice ~ bedrooms + room_type + overall_satisfaction + reviews)   #fit full model to simulated data
 bootstrap_F[i] <- anova(Mb_Full, Mb_Red)$F[2]
 }
 Bootstrap_Results_f_stat <- data.frame(bootstrap_F)
 ```
 
 ```{r}
-p1 <- ggplot(data=Bootstrap_Results_f_stat, aes(x=bootstrap_F)) + geom_histogram() + geom_vline(xintercept = 38.914, color="red", linetype="dotted", size=2) 
+p1 <- ggplot(data=Bootstrap_Results_f_stat, aes(x=bootstrap_F)) + geom_histogram() + geom_vline(xintercept = 19.864, color="red", linetype="dotted", size=2) 
 p1
 
 mean(bootstrap_F>34.276)
