@@ -147,49 +147,39 @@ anova(full, reduced)
 ```
 
 ```{r}
+M_Red <- lm(price ~ bedrooms + room_type, data = Airbnb)
+M_Full <- lm(price ~ bedrooms + room_type + overall_satisfaction, data=Airbnb)
+anova(M_Red, M_Full)
+```
+
+```{r}
 set.seed(02272022)
 # record estimates from reduced model
-b0 <- reduced$coefficients[1]
-b1 <- reduced$coefficients[2]
-b2 <- reduced$coefficients[3]
-b3 <- reduced$coefficients[4]
-sigma <- summary(reduced)$sigma
-nreps <- 1000
+b0 <- M_Red$coefficients[1]
+b1 <- M_Red$coefficients[2]
+b2 <- M_Red$coefficients[3]
+b3 <- M_Red$coefficients[4]
+sigma <- summary(M_Red)$sigma
+nreps <- 10000
 bootstrap_F <- c(rep(NA, nreps))
 B_Data <- Airbnb
 # simulate data and fit model
 for (i in 1:nreps){
    # simulate new data from reduced model
-<<<<<<< HEAD
-B_Data <- B_Data %>% mutate(SimPrice = b0 + (b1*B_Data$bedrooms) + b2 + b3 + rnorm(n= nrow(Airbnb), mean=0, sd=sigma))
-Mb_Reduced <- lm(data=B_Data, SimPrice ~ bedrooms + room_type)   #fit reduced model to simulated data
-Mb_Full <- lmer(data=B_Data, SimPrice ~ bedrooms + room_type + overall_satisfaction + (1|neighborhood)) #fit full model to simulated data
-bootstrap_F[i] <- anova(Mb_Full, Mb_Reduced)$F[2]
-=======
-B_Data <- B_Data %>% mutate(SimPrice = b0 + b1*yearnew + rnorm(n= nrow(), mean=0, sd=sigma))
-Mb_Reduced <- lm(data=B_Data, SimPrice~yearnew)   #fit reduced model to simulated data
-Mb_Full <- lm(data=B_Data, SimPrice ~ yearnew + fast + yearnew:fast)   #fit full model to simulated data
+B_Data <- B_Data %>% mutate(SimPrice = b0 + b1*bedrooms + b2 + b3 + rnorm(n= nrow(Airbnb), mean=0, sd=sigma))
+Mb_Red <- lm(data=B_Data, SimPrice ~ bedrooms + room_type)   #fit reduced model to simulated data
+Mb_Full <- lm(data=B_Data, SimPrice ~ bedrooms + room_type + overall_satisfaction)   #fit full model to simulated data
 bootstrap_F[i] <- anova(Mb_Full, Mb_Red)$F[2]
->>>>>>> c8c919fb9d13653b71346c7dea92d8b78c6ef4e2
 }
-Bootstrap_Results <- data.frame(bootstrap_F)
-```
-Confidence Intervals for Reduced and Full Models...
-
-
-
-
-
-```{r}
-
-
+Bootstrap_Results_f_stat <- data.frame(bootstrap_F)
 ```
 
 ```{r}
-p2 <- ggplot(data=Bootstrap_Results, aes(x=bootstrap_F)) + geom_histogram() + geom_vline(xintercept = 223.73, color="red", linetype="dotted", size=2) 
-p2
-```
+p1 <- ggplot(data=Bootstrap_Results_f_stat, aes(x=bootstrap_F)) + geom_histogram() + geom_vline(xintercept = 38.914, color="red", linetype="dotted", size=2) 
+p1
 
+mean(bootstrap_F>34.276)
+```
 
 Data for a model without many observations (Elephants)
 
