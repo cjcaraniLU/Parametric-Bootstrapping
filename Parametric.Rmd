@@ -305,9 +305,12 @@ p1 <- ggplot(data=Bootstrap_Results, aes(x=bootstrap_F)) + geom_histogram() + ge
 p1
 ```
 ### Model without Large Dataset and Comparison Results:
+
 In E_M1, for every additional year of age for an elephant, on average we expect to see the number of matings increase by 0.2. In E_M2, for every additional year of age for an elephant, we expect on average the number of matings to quadratically increase by a factor of 0.0058. The bootstrap confidence interval in the first histogram shows that the estimated parameter based on the real data is significant when compared against the bootstrapped data. The second histogram created is used to compare the F-statistic of the full model to the bootstrapping data. The F-statistic is very common which does not give us evidence that the full model is better than the reduced model.
 
 ## Model Comparison for Multilevel GLM:
+
+### Summary of GLM1 & GLM2:
 ```{r}
 ## Multilevel Generalized Linear Model for Bootstrapping
 
@@ -315,8 +318,10 @@ In E_M1, for every additional year of age for an elephant, on average we expect 
 refdata <- read.csv("https://raw.githubusercontent.com/proback/BeyondMLR/master/data/basketball0910.csv")
 # Model 1 with random slope, but no random Effect
 glm1 <- glmer(foul.home ~ foul.diff + (1|game), family = binomial(link="logit"), data = refdata)
+summary(glm1)
 # Model 2 with a random slope and a random effect for foul.diff
 glm2 <- glmer(foul.home ~ foul.diff + (foul.diff|game), family = binomial(link="logit"), data = refdata)
+summary(glm2)
 ```
 
 ### ANOVA Test
@@ -354,6 +359,7 @@ mean(ChiSq$x>5.4682)
 
 ### Model Comparison for Multilevel GLM Results:
 
+Our first model gives us the relationship between fouls on the home team and the foul difference with a random slope for game. The second model has thee same relationship, but adds a random effect for the foul difference. The estimates of the two models are quite a bit different due to the added random effect. A bootstrap is then run from the reduced model and both models are fit to the simulated data. Then our histogram displays the distribution of Chi Squared values that is produced from this bootstrapping. We find that our observed Chi squared value in our anova test before the simulation is on the far right end of the distribution. This then helps us calcuate our simulated P-value. We get a simulated P-value of 0.037. This P-Value is smaller that the previously observed P-value. This result is consistent with the idea that when boundry constraints are at issue in estimating variance and correlation of random effects, theory based P-value tests are too conservative leading to P-values that are estimated higher than they actually occur. Our simulated P-value supports this hypothesis that our above P-value was likely too large ue to a conervative approach to calculating the P-values in the ANOVA test. The simulated P-value also tells us that we do not have enough evidence to say that our full model is better than our reduced model. Thus, we cannot say that that addition of a random effect for foul differential is proven to be benefical in modeling the odds a fould is called on a home team.
 
 # Conclusions:
 
