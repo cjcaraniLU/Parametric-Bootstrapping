@@ -150,6 +150,16 @@ bootstrap_F[i] <- anova(Mb_Full, Mb_Red)$F[2]
 }
 Bootstrap_Results <- data.frame(bootstrap_F)
 ```
+Confidence Intervals for Reduced and Full Models...
+```{r}
+
+```
+
+```{r}
+
+
+```
+
 
 Data for a model without many observations (Elephants)
 
