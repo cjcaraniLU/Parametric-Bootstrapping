@@ -324,7 +324,7 @@ Level 2 Variables:
 # Background
 
 # Methods
-LME Model Comparison
+Normal Model Comparison 
   Our goal was to view how parametric bootstrapping can help us compare linear mixed effects models. We crated a full model with three variables and a random slope and wanted to compare that to a less complicated reduced model with two variables. One way to compare is by comparing the AIC's of the two models and the p-value for the full model. 
   But, another more foolproof way is by generating a bootstrap for each model and comparing the two sets of bootstrapped data. Bootstrapping provides the opportunity to negate any outlier data points, by generating a set number of data points randomly. This allows our estimates to be more exact and allows us to better view which model truly fits the data better.
   The first step for comparing LME models was creating the full model comprising of the variables bedrooms, room_type, and overall_satisfaction with a random slope for neighborhood. The random slope is added to account for the random derivation of price for each neighborhood. This model serves as our more complex model for the act of comparing a reduced model to a more complicated model using parametric bootstrapping.
