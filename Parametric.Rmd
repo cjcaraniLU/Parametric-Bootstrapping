@@ -164,9 +164,7 @@ Confidence Intervals for Reduced and Full Models...
 Data for a model without many observations (Elephants)
 
 ### Background
-"Bootstrapping methods are a numerical approach to generating confidence intervals that use either resampled data or simulated data to estimate the sampling distribution of the maximum likelihood parameter estimates"
-
-
+W.A. Nelson from the Encyclopedia of Ecology states, "Bootstrapping methods are a numerical approach to generating confidence intervals that use either resampled data or simulated data to estimate the sampling distribution of the maximum likelihood parameter estimates". This definition is the backbone reasoning on why and when a statistician should incorporate bootstrapping. The overall idea is that bootstrapping can greatly improve your findings and conclusions of a model's confidence intervals, p-values, F-statistics and hypothesis testing. Bootstrapping generally is also used when there is a lack of observations or there is data missing within the dataset. Bootstrapping solves this issue by resampling the data based off of the current observations that we as statisticians already have to generate plausible values that will allow us to create more concrete assumptions about our dataset. The simulated data will provide us with better reasoning on how well our models perfrom and which model to use by creating a comparison with the use of the new data. Non-parametric bootstrapping uses a technique called sampling with replacement. This procedure randomly selects observations, while putting those observations back into the real dataset.This will create a new sample that will have the same size as the real dataset. These steps are then repeated thousands of time to generate many different datasets for your model to use. The generated datasets use the real dataset to create new observations for our simulated datasets. Parametric bootstrapping uses a model's estimates to generate new datasets. These are the steps to use parametric bootstrapping: 1) Fit a model to the original dataset and record that model's parameters using their estimated values. 2) Next using the recorded estimated parameter values simulate many datasets. 3) For each newly created dataset, record each of the estimated parameters. 4) Then calculate statistics that are important for your conclusions. (p-values, F-statistic, t-statistics, etc.) 5) Create confidence intervals based off of the simulated values. There are multiple reasons for why we would create simulated data using parametric bootstrapping. The major reasons could be if we do not have enough data from our original dataset and need more to create conclusive evidence for a specific idea or hypothesis. Another is if we have doubts about our model assumptions. These doubts could be about normal distribution or skewness within the data.
 
 ### Data
 ```{r}
@@ -318,3 +316,9 @@ Dylan:
 # Results
 
 # Conclusions
+
+
+References: https://www.sciencedirect.com/topics/earth-and-planetary-sciences/bootstrapping#:~:text=Parametric%20bootstrapping%20works%20as%20follows,the%20most%20likely%20parameter%20estimates
+https://stat455-w22.github.io/stat455-w22-notes/multilevel-generalized-linear-models.html#parametric-bootstrapping
+https://bookdown.org/roback/bookdown-BeyondMLR/ch-GLMM.html#cs:refs
+
