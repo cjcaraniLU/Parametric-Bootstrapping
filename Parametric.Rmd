@@ -76,6 +76,14 @@ summary(Bootstrap_Results)
 ```
 
 ```{r}
+#For Reduced Model
+p1 <- ggplot(data=Bootstrap_Results, aes(x=bootstrap_b0)) + geom_histogram() + geom_vline(xintercept=quantile(bootstrap_b0, c(.025, .975)), color="red")
+p1
+
+quantile(bootstrap_b0, c(.025, .975))
+```
+
+```{r}
 # Model 2 - LME Comparison FULL MODEL
 full <- lmer(data = Airbnb, price ~ bedrooms + room_type + overall_satisfaction + (1|neighborhood))
 summary(full)
@@ -127,8 +135,17 @@ summary(Bootstrap_Results_M2)
 ```
 
 ```{r}
+#For Full Model
+p2 <- ggplot(data=Bootstrap_Results_M2, aes(x=bootstrap_b0)) + geom_histogram() + geom_vline(xintercept=quantile(bootstrap_b0, c(.025, .975)), color="red")
+p2
+
+quantile(bootstrap_b0, c(.025, .975))
+```
+
+```{r}
 anova(full, reduced)
 ```
+
 ```{r}
 set.seed(02272022)
 # record estimates from reduced model
@@ -143,13 +160,36 @@ B_Data <- Airbnb
 # simulate data and fit model
 for (i in 1:nreps){
    # simulate new data from reduced model
-B_Data <- B_Data %>% mutate(SimPrice = b0 + b1*yearnew + rnorm(n= nrow(derby.df), mean=0, sd=sigma))
+<<<<<<< HEAD
+B_Data <- B_Data %>% mutate(SimPrice = b0 + (b1*B_Data$bedrooms) + b2 + b3 + rnorm(n= nrow(Airbnb), mean=0, sd=sigma))
+Mb_Reduced <- lm(data=B_Data, SimPrice ~ bedrooms + room_type)   #fit reduced model to simulated data
+Mb_Full <- lmer(data=B_Data, SimPrice ~ bedrooms + room_type + overall_satisfaction + (1|neighborhood)) #fit full model to simulated data
+bootstrap_F[i] <- anova(Mb_Full, Mb_Reduced)$F[2]
+=======
+B_Data <- B_Data %>% mutate(SimPrice = b0 + b1*yearnew + rnorm(n= nrow(), mean=0, sd=sigma))
 Mb_Reduced <- lm(data=B_Data, SimPrice~yearnew)   #fit reduced model to simulated data
 Mb_Full <- lm(data=B_Data, SimPrice ~ yearnew + fast + yearnew:fast)   #fit full model to simulated data
 bootstrap_F[i] <- anova(Mb_Full, Mb_Red)$F[2]
+>>>>>>> c8c919fb9d13653b71346c7dea92d8b78c6ef4e2
 }
 Bootstrap_Results <- data.frame(bootstrap_F)
 ```
+Confidence Intervals for Reduced and Full Models...
+
+
+
+
+
+```{r}
+
+
+```
+
+```{r}
+p2 <- ggplot(data=Bootstrap_Results, aes(x=bootstrap_F)) + geom_histogram() + geom_vline(xintercept = 223.73, color="red", linetype="dotted", size=2) 
+p2
+```
+
 
 Data for a model without many observations (Elephants)
 
