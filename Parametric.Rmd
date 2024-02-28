@@ -328,12 +328,17 @@ LME Model Comparison
   Then, we created a reduced model comprising of the variables bedrooms and room_type, without a random slope variables. This model is predicted to not account for as much variability in the model, but will help us determine if our full model is too complicated.
 
 CJ:
+Model without Large Dataset and Comparison:
+For the elephant dataset there were two models that were created. Becuase of the lack of explanatory variables both models used age as explanatory variables. However, the second, full, model used the variable age2 which was the age of the elephants squared. This was done to see if there was a quadratic relationship between age of the elephants and their number of matings. Bootstrapping is essential for this test becuase there are doubts about the size of the dataset and if the model statistics that are calculated can be trusted becuase of how small the dataset is. The first bootstrapping procedure used was to calculate how significant our explanatory variable age is to multiple models that use randomly simulated datasets. The confidence interval was also calculated for the variable age. The next bootstrapping procedure used was to determine if the second, full model was signifcant enough against the reduced model. The process first calculated the the estimates for the reduced model then we use the estimates to create the simulated data many times. During each simulation we track the estimates of each model and their F-statistic. This is important because we will compare the first F-statistic created from the original dataset to the 10,000 randomly simulated F-statistics.
 
 Dylan:
 
 # Data
 (Matt)
 When we compared the Full Model to the Reduced Model we are using the Airbnb data which we have used previously in class. This data set has just over 1500 observations and 14 variables. In the first model which was labeled as "reduced" we used a linear model hence "lm". In this model, the dependent variable also known as the Response Variable is Price. We are trying to predict the Price of an Airbnb based off of the independent variables commonly referred to as the Explanatory Variables which in this case are bedrooms and room types.
+
+CJ: The dataset used for demonstrate an example of a model without large data is the Elephants dataset created by Poole (1989). This dataest was used to figure out factors that contribute to the amount of matings that an elelphant does in a given year. The only explanatory factor is AGE of the elephant while the respone variable is MATINGS. The only data modifications that were made was the addition of another column that accounted for the AGE variable being squared which is labeled age2. The biggest concern about this data is the lack of observations within the dataset. There are only 41 observations which will not allow for concrete conclusions about the models that will be created. This is a perfect example for parametric bootstrapping.
+
 # Results
 
 # Conclusions
