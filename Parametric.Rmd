@@ -22,32 +22,74 @@ library(tidyverse)
 library(Matrix)
 ```
 
-Data for a model with many observations and varaibles (Airbnb)
+Comparing LME models using Parametric Bootstrapping
 ```{r}
 Airbnb <- read_csv("https://raw.githubusercontent.com/proback/BeyondMLR/master/data/airbnb.csv")
 ```
 
 ```{r}
-M1 <- lm(price ~ bedrooms + WalkScore + TransitScore + BikeScore, data = Airbnb)
+# Model 1 - LME Comparison REDUCED MODEL
+reduced <- lm(price ~ bedrooms + room_type, data = Airbnb)
 summary(M1)
-
 ```
-```{r}
-M2 <- lmer(data = Airbnb, price ~ BikeScore + WalkScore + TransitScore + (1|neighborhood))
-summary(M2)
-
-```
-
 
 ```{r}
 # Record estimates from the original model (M1)
-b0 <- coef(M)[1]
-b1 <- coef(M)[2]
-b2 <- coef(M)[3]
-b3 <- coef(M)[4]
-b4 <- coef(M)[5]
-sigma <- summary(M1)$sigma
-nreps <- 10000
+b0 <- coef(reduced)[1]
+b1 <- coef(reduced)[2]
+b2 <- coef(reduced)[3]
+b3 <- coef(reduced)[4]
+sigma <- summary(reduced)$sigma
+nreps <- 1000
+
+# Initialize vectors for bootstrap results
+bootstrap_b0 <- numeric(nreps)
+bootstrap_b1 <- numeric(nreps)
+bootstrap_b2 <- numeric(nreps)
+bootstrap_b3 <- numeric(nreps)
+bootstrap_sigma <- numeric(nreps)
+
+# Copy the original data for simulation
+B_Data <- Airbnb
+
+# Simulate data and fit model
+for (i in 1:nreps) {
+  # Simulate new data
+  B_Data$SimPrice <- b0 + (b1*B_Data$bedrooms) + b2 + b3 + rnorm(n = nrow(Airbnb), mean = 0, sd = sigma)
+  
+  # Fit model to simulated data
+  Mb1 <- lm(SimPrice ~ bedrooms + room_type, data = B_Data)
+  
+  # Record coefficients and sigma from the model on simulated data
+  bootstrap_b0[i] <- coef(Mb1)[1]
+  bootstrap_b1[i] <- coef(Mb1)[2]
+  bootstrap_b2[i] <- coef(Mb1)[3]
+  bootstrap_b3[i] <- coef(Mb1)[4]
+  bootstrap_sigma[i] <- summary(Mb1)$sigma
+}
+
+# Create a data frame with bootstrap results
+Bootstrap_Results <- data.frame(bootstrap_b0, bootstrap_b1, bootstrap_b2, bootstrap_b3, bootstrap_sigma)
+
+# View the summary of bootstrap results
+summary(Bootstrap_Results)
+```
+
+```{r}
+# Model 2 - LME Comparison FULL MODEL
+full <- lmer(data = Airbnb, price ~ bedrooms + room_type + overall_satisfaction + (1|neighborhood))
+summary(full)
+```
+
+```{r}
+# Record estimates from the original model
+b0 <- fixef(full)[1]
+b1 <- fixef(full)[2]
+b2 <- fixef(full)[3]
+b3 <- fixef(full)[4]
+b4 <- fixef(full)[5]
+sigma <- summary(full)$sigma
+nreps <- 1000
 
 # Initialize vectors for bootstrap results
 bootstrap_b0 <- numeric(nreps)
@@ -63,112 +105,50 @@ B_Data <- Airbnb
 # Simulate data and fit model
 for (i in 1:nreps) {
   # Simulate new data
-  B_Data$SimPrice <- b0 + (b1*B_Data$bedrooms) + (b2*B_Data$BikeScore) + (b3*B_Data$WalkScore) + (b4*B_Data$TransitScore) + rnorm(n = nrow(Airbnb), mean = 0, sd = sigma)
-  
-  # Fit model to simulated data
-  Mb <- lm(SimPrice ~ bedrooms + WalkScore + TransitScore + BikeScore, data = B_Data)
-  
-  # Record coefficients and sigma from the model on simulated data
-  bootstrap_b0[i] <- coef(Mb)[1]
-  bootstrap_b1[i] <- coef(Mb)[2]
-  bootstrap_b2[i] <- coef(Mb)[3]
-  bootstrap_b3[i] <- coef(Mb)[4]
-  bootstrap_b4[i] <- coef(Mb)[5]
-  bootstrap_sigma[i] <- summary(Mb)$sigma
-}
-
-# Create a data frame with bootstrap results
-Bootstrap_Results <- data.frame(bootstrap_b0, bootstrap_b1, bootstrap_b2, bootstrap_b3, bootstrap_b4, bootstrap_sigma)
-
-# View the summary of bootstrap results
-summary(Bootstrap_Results)
-
-
-```
-
-```{r}
-p1 <- ggplot(data=Bootstrap_Results, aes(x=bootstrap_b0)) + geom_histogram() + geom_vline(xintercept=quantile(bootstrap_b0, c(.025, .975)), color="red")
-p1
-
-```
-```{r}
-quantile(bootstrap_b1, c(.025, .975))
-
-```
-
-
-```{r}
-# Load necessary libraries
-library(lme4)
-
-# Original model M2
-M2 <- lmer(price ~ BikeScore + WalkScore + TransitScore + (1|neighborhood), data = Airbnb)
-
-# Record estimates from the original model
-b0 <- fixef(M2)[1]
-b1 <- fixef(M2)[2]
-b2 <- fixef(M2)[3]
-b3 <- fixef(M2)[4]
-sigma <- summary(M2)$sigma
-nreps <- 10000
-
-# Initialize vectors for bootstrap results
-bootstrap_b0 <- numeric(nreps)
-bootstrap_b1 <- numeric(nreps)
-bootstrap_b2 <- numeric(nreps)
-bootstrap_b3 <- numeric(nreps)
-bootstrap_sigma <- numeric(nreps)
-
-# Copy the original data for simulation
-B_Data <- Airbnb
-
-# Simulate data and fit model
-for (i in 1:nreps) {
-  # Simulate new data
-  B_Data$SimPrice <- b0 + (b1*B_Data$BikeScore) + (b2*B_Data$WalkScore) + (b3*B_Data$TransitScore) + rnorm(n = nrow(Airbnb), mean = 0, sd = sigma)
+  B_Data$SimPrice <- b0 + (b1*B_Data$bedrooms) + b2 + b3 + (b4*B_Data$overall_satisfaction) + rnorm(n = nrow(Airbnb), mean = 0, sd = sigma)
   
   # Fit mixed-effects model to simulated data
-  Mb <- lmer(SimPrice ~ BikeScore + WalkScore + TransitScore + (1|neighborhood), data = B_Data)
+  Mb2 <- lmer(SimPrice ~ bedrooms + room_type + overall_satisfaction + (1|neighborhood), data = B_Data)
   
   # Record fixed effects and sigma from the model on simulated data
-  bootstrap_b0[i] <- fixef(Mb)[1]
-  bootstrap_b1[i] <- fixef(Mb)[2]
-  bootstrap_b2[i] <- fixef(Mb)[3]
-  bootstrap_b3[i] <- fixef(Mb)[4]
-  bootstrap_sigma[i] <- summary(Mb)$sigma
+  bootstrap_b0[i] <- fixef(Mb2)[1]
+  bootstrap_b1[i] <- fixef(Mb2)[2]
+  bootstrap_b2[i] <- fixef(Mb2)[3]
+  bootstrap_b3[i] <- fixef(Mb2)[4]
+  bootstrap_b4[i] <- fixef(Mb2)[5]  
+  bootstrap_sigma[i] <- summary(Mb2)$sigma
 }
 
 # Create a data frame with bootstrap results
-Bootstrap_Results_M2 <- data.frame(bootstrap_b0, bootstrap_b1, bootstrap_b2, bootstrap_b3, bootstrap_sigma)
+Bootstrap_Results_M2 <- data.frame(bootstrap_b0, bootstrap_b1, bootstrap_b2, bootstrap_b3, bootstrap_b3, bootstrap_sigma)
 
 # View the summary of bootstrap results
 summary(Bootstrap_Results_M2)
-
-
-```
-
-
-```{r}
-
-
 ```
 
 ```{r}
-
-
+anova(full, reduced)
 ```
-
-
-<<<<<<< HEAD
-=======
-Use the Airbnb to compare models
-maybe llsr vs lme?
 ```{r}
-#llsr model
-m1 <- lm(data = Airbnb, price ~ BikeScore + WalkScore + TransitScore)
-
-#lme model
-m2 <- lmer(data = Airbnb, price ~ BikeScore + WalkScore + TransitScore + (1|neighborhood))
+set.seed(02272022)
+# record estimates from reduced model
+b0 <- reduced$coefficients[1]
+b1 <- reduced$coefficients[2]
+b2 <- reduced$coefficients[3]
+b3 <- reduced$coefficients[4]
+sigma <- summary(reduced)$sigma
+nreps <- 1000
+bootstrap_F <- c(rep(NA, nreps))
+B_Data <- Airbnb
+# simulate data and fit model
+for (i in 1:nreps){
+   # simulate new data from reduced model
+B_Data <- B_Data %>% mutate(SimPrice = b0 + b1*yearnew + rnorm(n= nrow(derby.df), mean=0, sd=sigma))
+Mb_Reduced <- lm(data=B_Data, SimPrice~yearnew)   #fit reduced model to simulated data
+Mb_Full <- lm(data=B_Data, SimPrice ~ yearnew + fast + yearnew:fast)   #fit full model to simulated data
+bootstrap_F[i] <- anova(Mb_Full, Mb_Red)$F[2]
+}
+Bootstrap_Results <- data.frame(bootstrap_F)
 ```
 
 Data for a model without many observations (Elephants)
@@ -177,7 +157,6 @@ Data for a model without many observations (Elephants)
 W.A. Nelson from the Encyclopedia of Ecology states, "Bootstrapping methods are a numerical approach to generating confidence intervals that use either resampled data or simulated data to estimate the sampling distribution of the maximum likelihood parameter estimates". This definition is the backbone reasoning on why and when a statistician should incorporate bootstrapping. The overall idea is that bootstrapping can greatly improve your findings and conclusions of a model's confidence intervals, p-values, F-statistics and hypothesis testing. Bootstrapping generally is also used when there is a lack of observations or there is data missing within the dataset. Bootstrapping solves this issue by resampling the data based off of the current observations that we as statisticians already have to generate plausible values that will allow us to create more concrete assumptions about our dataset. The simulated data will provide us with better reasoning on how well our models perfrom and which model to use by creating a comparison with the use of the new data. Non-parametric bootstrapping uses a technique called sampling with replacement. This procedure randomly selects observations, while putting those observations back into the real dataset.This will create a new sample that will have the same size as the real dataset. These steps are then repeated thousands of time to generate many different datasets for your model to use. The generated datasets use the real dataset to create new observations for our simulated datasets. Parametric bootstrapping uses a model's estimates to generate new datasets. These are the steps to use parametric bootstrapping: 1) Fit a model to the original dataset and record that model's parameters using their estimated values. 2) Next using the recorded estimated parameter values simulate many datasets. 3) For each newly created dataset, record each of the estimated parameters. 4) Then calculate statistics that are important for your conclusions. (p-values, F-statistic, t-statistics, etc.) 5) Create confidence intervals based off of the simulated values. There are multiple reasons for why we would create simulated data using parametric bootstrapping. The major reasons could be if we do not have enough data from our original dataset and need more to create conclusive evidence for a specific idea or hypothesis. Another is if we have doubts about our model assumptions. These doubts could be about normal distribution or skewness within the data.
 
 ### Data
-
 ```{r}
 elephants <- read_csv("https://raw.githubusercontent.com/proback/BeyondMLR/master/data/elephant.csv")
 ```
@@ -190,6 +169,7 @@ elephants <- elephants %>% mutate(age2 = AGE*AGE)
 E_M2 <- lm(MATINGS ~ AGE + age2, data = elephants)
 summary(E_M2)
 ```
+
 #Bootstrap for Model 1 Estimates
 ```{r}
 # record estimates from the model
@@ -310,9 +290,18 @@ Level 2 Variables:
 =======
 # Background
 
-# Data
-
 # Methods
+LME Model Comparison
+  Our goal was to view how parametric bootstrapping can help us compare linear mixed effects models. We crated a full model with three variables and a random slope and wanted to compare that to a less complicated reduced model with two variables. One way to compare is by comparing the AIC's of the two models and the p-value for the full model. 
+  But, another more foolproof way is by generating a bootstrap for each model and comparing the two sets of bootstrapped data. Bootstrapping provides the opportunity to negate any outlier data points, by generating a set number of data points randomly. This allows our estimates to be more exact and allows us to better view which model truly fits the data better.
+  The first step for comparing LME models was creating the full model comprising of the variables bedrooms, room_type, and overall_satisfaction with a random slope for neighborhood. The random slope is added to account for the random derivation of price for each neighborhood. This model serves as our more complex model for the act of comparing a reduced model to a more complicated model using parametric bootstrapping.
+  Then, we created a reduced model comprising of the variables bedrooms and room_type, without a random slope variables. This model is predicted to not account for as much variability in the model, but will help us determine if our full model is too complicated.
+
+CJ:
+
+Dylan:
+
+# Data
 
 # Results
 
