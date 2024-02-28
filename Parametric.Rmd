@@ -22,32 +22,73 @@ library(tidyverse)
 library(Matrix)
 ```
 
-Data for a model with many observations and varaibles (Airbnb)
+Comparing LME models using Parametric Bootstrapping
 ```{r}
 Airbnb <- read_csv("https://raw.githubusercontent.com/proback/BeyondMLR/master/data/airbnb.csv")
 ```
 
 ```{r}
-M1 <- lm(price ~ bedrooms + WalkScore + TransitScore + BikeScore, data = Airbnb)
+# Model 1 - LME Comparison REDUCED MODEL
+M1 <- lm(price ~ bedrooms + room_type, data = Airbnb)
 summary(M1)
-
 ```
-```{r}
-M2 <- lmer(data = Airbnb, price ~ BikeScore + WalkScore + TransitScore + (1|neighborhood))
-summary(M2)
-
-```
-
 
 ```{r}
 # Record estimates from the original model (M1)
-b0 <- coef(M)[1]
-b1 <- coef(M)[2]
-b2 <- coef(M)[3]
-b3 <- coef(M)[4]
-b4 <- coef(M)[5]
+b0 <- coef(M1)[1]
+b1 <- coef(M1)[2]
+b2 <- coef(M1)[3]
 sigma <- summary(M1)$sigma
-nreps <- 10000
+nreps <- 1000
+
+# Initialize vectors for bootstrap results
+bootstrap_b0 <- numeric(nreps)
+bootstrap_b1 <- numeric(nreps)
+bootstrap_b2 <- numeric(nreps)
+bootstrap_b3 <- numeric(nreps)
+bootstrap_sigma <- numeric(nreps)
+
+# Copy the original data for simulation
+B_Data <- Airbnb
+
+# Simulate data and fit model
+for (i in 1:nreps) {
+  # Simulate new data
+  B_Data$SimPrice <- b0 + (b1*B_Data$bedrooms) + b2 + b3 + rnorm(n = nrow(Airbnb), mean = 0, sd = sigma)
+  
+  # Fit model to simulated data
+  Mb <- lm(SimPrice ~ bedrooms + room_type, data = B_Data)
+  
+  # Record coefficients and sigma from the model on simulated data
+  bootstrap_b0[i] <- coef(Mb)[1]
+  bootstrap_b1[i] <- coef(Mb)[2]
+  bootstrap_b2[i] <- coef(Mb)[3]
+  bootstrap_b3[i] <- coef(Mb)[4]
+  bootstrap_sigma[i] <- summary(Mb)$sigma
+}
+
+# Create a data frame with bootstrap results
+Bootstrap_Results <- data.frame(bootstrap_b0, bootstrap_b1, bootstrap_b2, bootstrap_b3, bootstrap_sigma)
+
+# View the summary of bootstrap results
+summary(Bootstrap_Results)
+```
+
+```{r}
+# Model 2 - LME Comparison FULL MODEL
+full <- lmer(data = Airbnb, price ~ bedrooms + room_type + overall_satisfaction + (1|neighborhood))
+summary(full)
+```
+
+```{r}
+# Record estimates from the original model
+b0 <- fixef(full)[1]
+b1 <- fixef(full)[2]
+b2 <- fixef(full)[3]
+b3 <- fixef(full)[4]
+b4 <- fixef(full)[5]
+sigma <- summary(full)$sigma
+nreps <- 1000
 
 # Initialize vectors for bootstrap results
 bootstrap_b0 <- numeric(nreps)
@@ -63,90 +104,35 @@ B_Data <- Airbnb
 # Simulate data and fit model
 for (i in 1:nreps) {
   # Simulate new data
-  B_Data$SimPrice <- b0 + (b1*B_Data$bedrooms) + (b2*B_Data$BikeScore) + (b3*B_Data$WalkScore) + (b4*B_Data$TransitScore) + rnorm(n = nrow(Airbnb), mean = 0, sd = sigma)
-  
-  # Fit model to simulated data
-  Mb <- lm(SimPrice ~ bedrooms + WalkScore + TransitScore + BikeScore, data = B_Data)
-  
-  # Record coefficients and sigma from the model on simulated data
-  bootstrap_b0[i] <- coef(Mb)[1]
-  bootstrap_b1[i] <- coef(Mb)[2]
-  bootstrap_b2[i] <- coef(Mb)[3]
-  bootstrap_b3[i] <- coef(Mb)[4]
-  bootstrap_b4[i] <- coef(Mb)[5]
-  bootstrap_sigma[i] <- summary(Mb)$sigma
-}
-
-# Create a data frame with bootstrap results
-Bootstrap_Results <- data.frame(bootstrap_b0, bootstrap_b1, bootstrap_b2, bootstrap_b3, bootstrap_b4, bootstrap_sigma)
-
-# View the summary of bootstrap results
-summary(Bootstrap_Results)
-
-
-```
-
-```{r}
-p1 <- ggplot(data=Bootstrap_Results, aes(x=bootstrap_b0)) + geom_histogram() + geom_vline(xintercept=quantile(bootstrap_b0, c(.025, .975)), color="red")
-p1
-
-```
-```{r}
-quantile(bootstrap_b1, c(.025, .975))
-
-```
-
-
-```{r}
-# Load necessary libraries
-library(lme4)
-
-# Original model M2
-M2 <- lmer(price ~ BikeScore + WalkScore + TransitScore + (1|neighborhood), data = Airbnb)
-
-# Record estimates from the original model
-b0 <- fixef(M2)[1]
-b1 <- fixef(M2)[2]
-b2 <- fixef(M2)[3]
-b3 <- fixef(M2)[4]
-sigma <- summary(M2)$sigma
-nreps <- 10000
-
-# Initialize vectors for bootstrap results
-bootstrap_b0 <- numeric(nreps)
-bootstrap_b1 <- numeric(nreps)
-bootstrap_b2 <- numeric(nreps)
-bootstrap_b3 <- numeric(nreps)
-bootstrap_sigma <- numeric(nreps)
-
-# Copy the original data for simulation
-B_Data <- Airbnb
-
-# Simulate data and fit model
-for (i in 1:nreps) {
-  # Simulate new data
-  B_Data$SimPrice <- b0 + (b1*B_Data$BikeScore) + (b2*B_Data$WalkScore) + (b3*B_Data$TransitScore) + rnorm(n = nrow(Airbnb), mean = 0, sd = sigma)
+  B_Data$SimPrice <- b0 + (b1*B_Data$bedrooms) + b2 + b3 + (b4*B_Data$overall_satisfaction) + rnorm(n = nrow(Airbnb), mean = 0, sd = sigma)
   
   # Fit mixed-effects model to simulated data
-  Mb <- lmer(SimPrice ~ BikeScore + WalkScore + TransitScore + (1|neighborhood), data = B_Data)
+  Mb <- lmer(SimPrice ~ bedrooms + room_type + overall_satisfaction + (1|neighborhood), data = B_Data)
   
   # Record fixed effects and sigma from the model on simulated data
   bootstrap_b0[i] <- fixef(Mb)[1]
   bootstrap_b1[i] <- fixef(Mb)[2]
   bootstrap_b2[i] <- fixef(Mb)[3]
   bootstrap_b3[i] <- fixef(Mb)[4]
+  bootstrap_b4[i] <- fixef(Mb)[5]  
   bootstrap_sigma[i] <- summary(Mb)$sigma
 }
 
 # Create a data frame with bootstrap results
-Bootstrap_Results_M2 <- data.frame(bootstrap_b0, bootstrap_b1, bootstrap_b2, bootstrap_b3, bootstrap_sigma)
+Bootstrap_Results_M2 <- data.frame(bootstrap_b0, bootstrap_b1, bootstrap_b2, bootstrap_b3, bootstrap_b3, bootstrap_sigma)
 
 # View the summary of bootstrap results
 summary(Bootstrap_Results_M2)
-
-
 ```
 
+```{r}
+p1 <- ggplot(data=Bootstrap_Results, aes(x=bootstrap_b0)) + geom_histogram() + geom_vline(xintercept=quantile(bootstrap_b0, c(.025, .975)), color="red") + xlab("b0 Estimates") + ggtitle("Distribution of Bootstrapped b0")
+p1
+```
+
+```{r}
+kable(quantile(bootstrap_b1, c(.025, .975)))
+```
 
 ```{r}
 
@@ -156,19 +142,6 @@ summary(Bootstrap_Results_M2)
 ```{r}
 
 
-```
-
-
-<<<<<<< HEAD
-=======
-Use the Airbnb to compare models
-maybe llsr vs lme?
-```{r}
-#llsr model
-m1 <- lm(data = Airbnb, price ~ BikeScore + WalkScore + TransitScore)
-
-#lme model
-m2 <- lmer(data = Airbnb, price ~ BikeScore + WalkScore + TransitScore + (1|neighborhood))
 ```
 
 Data for a model without many observations (Elephants)
@@ -305,9 +278,15 @@ Level 2 Variables:
 =======
 # Background
 
-# Data
-
 # Methods
+Kaz:
+  Our goal was to view how parametric bootstrapping can help us compare linear mixed effects models. Linear mixed effects models allow us to account for random effects or random slopes. Our second model in the comparison includes a random slope so that we can study if a random slope is helpful to include for our AirBnb Dataset.
+
+CJ:
+
+Dylan:
+
+# Data
 
 # Results
 
