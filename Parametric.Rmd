@@ -269,7 +269,7 @@ Bootstrap_Results <- data.frame(bootstrap_b0, bootstrap_b1, bootstrap_sigma)
 summary(Bootstrap_Results)
 ```
 
-### Model 1: Confidence Intervals for Bootstrapped b1
+### Model 2: Confidence Intervals for Bootstrapped b1
 ```{r}
 p1 <- ggplot(data=Bootstrap_Results, aes(x=bootstrap_b1)) + geom_histogram() + geom_vline(xintercept=quantile(bootstrap_b1, c(.025, .975)), color="red") + ggtitle("Confidence Intervals for Bootstrapped b1") + ylab("Bootstrapped b1")
 p1
