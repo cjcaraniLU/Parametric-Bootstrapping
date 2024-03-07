@@ -119,10 +119,10 @@ summary(Bootstrap_Results)
 ### Model 1: Confidence Interval for Bootstrapped b0
 ```{r}
 #For Reduced Model
-p1 <- ggplot(data=Bootstrap_Results, aes(x=bootstrap_b1)) + geom_histogram() + geom_vline(xintercept=quantile(bootstrap_b1, c(.025, .975)), color="red") + ggtitle("Confidence Intervals for Bootstrapped b1") + ylab("Bootstrapped b1")
+p1 <- ggplot(data=Bootstrap_Results, aes(x=bootstrap_b1)) + geom_histogram() + geom_vline(xintercept=quantile(bootstrap_b1, c(.025, .975)), color="red") + geom_vline(xintercept = 47.342, color = "green", linetype="dotted", size=2)  + ggtitle("Confidence Intervals for Bootstrapped b1") + ylab("Count") + xlab("Bootstrapped b1")
 p1
 
-quantile(bootstrap_b0, c(.025, .975))
+quantile(bootstrap_b1, c(.025, .975))
 ```
 ### Model 2: Full Model
 ```{r}
@@ -178,13 +178,13 @@ Bootstrap_Results_M2 <- data.frame(bootstrap_b0, bootstrap_b1, bootstrap_b2, boo
 # View the summary of bootstrap results
 summary(Bootstrap_Results_M2)
 ```
-### Model 2: Confidence Intervals for Bootstrapped b0
+### Model 2: Confidence Intervals for Bootstrapped b1
 ```{r}
 #For Full Model
-p2 <- ggplot(data=Bootstrap_Results_M2, aes(x=bootstrap_b0)) + geom_histogram() + geom_vline(xintercept=quantile(bootstrap_b0, c(.025, .975)), color="red") + ggtitle("Confidence Intervals for Bootstrapped b0") + ylab("Bootstrapped b0")
+p2 <- ggplot(data=Bootstrap_Results_M2, aes(x=bootstrap_b1)) + geom_histogram() + geom_vline(xintercept=quantile(bootstrap_b1, c(.025, .975)), color="red") + geom_vline(xintercept = 47.76056, color = "green", linetype="dotted", size=2) + ggtitle("Confidence Intervals for Bootstrapped b1") + ylab("Count") + xlab("Bootstrapped b1")
 p2
 
-quantile(bootstrap_b0, c(.025, .975))
+quantile(bootstrap_b1, c(.025, .975))
 ```
 ### ANOVA Test
 ```{r}
@@ -276,7 +276,7 @@ Bootstrap_Results <- data.frame(bootstrap_b0, bootstrap_b1, bootstrap_sigma)
 summary(Bootstrap_Results)
 ```
 
-### Model 1: Confidence Intervals for Bootstrapped b1
+### Model 2: Confidence Intervals for Bootstrapped b1
 ```{r}
 p1 <- ggplot(data=Bootstrap_Results, aes(x=bootstrap_b1)) + geom_histogram() + geom_vline(xintercept=quantile(bootstrap_b1, c(.025, .975)), color="red") + ggtitle("Confidence Intervals for Bootstrapped b1") + ylab("Bootstrapped b1")
 p1
