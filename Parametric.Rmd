@@ -323,7 +323,7 @@ refdata <- read.csv("https://raw.githubusercontent.com/proback/BeyondMLR/master/
 glm1 <- glmer(foul.home ~ foul.diff + (1|game), family = binomial(link="logit"), data = refdata)
 summary(glm1)
 # Model 2 with a random slope and a random effect for foul.diff
-glm2 <- glmer(foul.home ~ foul.diff + (foul.diff|game), family = binomial(link="logit"), data = refdata)
+glm2 <- glmer(foul.home ~ foul.diff + (foul.diff|game),family = binomial(link="logit") , data = refdata)
 summary(glm2)
 ```
 
@@ -351,7 +351,7 @@ ChiSq<- write.csv(ChiSq, file="ChiSq.csv")
 ```{r}
 ChiSq <- read.csv("ChiSq.csv")
 p <- ggplot(data=data.frame(ChiSq), aes(x=x)) + geom_histogram() + 
-  geom_vline(xintercept = 5.4682, color="red", linetype="dotted", size=2) 
+  geom_vline(xintercept = 5.4682, color="red", linetype="dotted", size=2) + xlab("ChiSq") + ggtitle("ChiSq Distribution")
 p
 ```
 
