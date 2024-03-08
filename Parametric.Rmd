@@ -28,6 +28,8 @@ W.A. Nelson from the Encyclopedia of Ecology states, "Bootstrapping methods are 
 
 # Methods:
 
+For each of the three models we use parametric bootstrapping to improve our datasets or to improve our models. The steps used to complete this follow the steps highlighted within our background section. First we create a model using the original dataset using the typical functions (lm and glmer). Following this step, we record the parameter estimates and standard deviation. Next we create vectors of a certain size, x (10,000) that will be used to hold the parameter estimates and standard deviations for each of the simulated models. Then we create a duplicate dataset using the original dataset. We are now able to begin our for loop that will run for x numbers of times. Now that we are within our for loop we want to begin to create our new simulated data. We use a mutate command to change the duplicated dataset to hold simulated data instead of the original data. Following, our model is run on the new simulated data then those estimates are collected within the vectors we created earlier. After the for loop is done we use the collected simulated data estimates to run tests to understand how well our models are and their estimated parameters. 
+
 ### Linear Model Comparison:
 
 Our goal was to view how parametric bootstrapping can help us compare linear models. We crated a full model with four variables and wanted to compare that to a less complicated reduced model with two variables. One way to compare is by comparing the AIC's of the two models and the p-value for the full model using the anova command in RStudio. In addition to being able to run that we could use parametric bootstrapping to generate data based on the reduced model, and then use that data to compare the models. Bootstrapping provides the opportunity to negate any outlier data points, by generating a set number of data points randomly. This allows our estimates to be more exact and allows us to better view which model truly fits the data better.We will do this by generating the f-statistics using parametric bootstrapping and using that to see if our initial measured f-statistic was able to be generated due to chance. This will then allow us to see which model is better for the purposed of the Airbnb data.
@@ -236,6 +238,7 @@ elephants <- read_csv("https://raw.githubusercontent.com/proback/BeyondMLR/maste
 ```
 ### Summary of Model 1 & Model 2
 ```{r}
+# Generate Model for Elephant dataset
 E_M1 <- lm(MATINGS ~ AGE, data = elephants)
 summary(E_M1)
 
@@ -246,23 +249,29 @@ summary(E_M2)
 
 ### Model 1: Bootstrapping
 ```{r}
-# record estimates from the model
+#Record estimates and standard deviation from E_M1 model
 b0 <- E_M1$coefficients[1]
 b1 <- E_M1$coefficients[2]
 sigma <- summary(E_M1)$sigma
+
+#Choose how many iterations to run
 nreps <- 10000
+
+#Create vectors that hold estimates from Simulation
 bootstrap_b0 <- c(rep(NA, nreps))
 bootstrap_b1 <- c(rep(NA, nreps))
 bootstrap_sigma <- c(rep(NA, nreps))
+
+#Duplicate data set for Simulation to follow
 E_Data <- elephants
-# simulate data and fit model
+#Begin for loop
 for (i in 1:nreps){
-   # simulate new data
+   #Simulate new data using standard deviation 
 E_Data <- E_Data %>% mutate(SimMatings = b0 + b1*AGE + rnorm(n= nrow(elephants), mean=0, sd=sigma))
-Mb <- lm(data=E_Data, SimMatings~AGE)   #fit model to simulated data
-bootstrap_b0[i] <- Mb$coefficients[1]        #record b0 from model on simulated data
-bootstrap_b1[i] <- Mb$coefficients[2]        #record b1 from model on simulated data
-bootstrap_sigma[i] <- summary(Mb)$sigma      #record sigma from model on simulated data
+Mb <- lm(data=E_Data, SimMatings~AGE)        #Fit model to simulated data
+bootstrap_b0[i] <- Mb$coefficients[1]        #Record b0 from model on simulated data
+bootstrap_b1[i] <- Mb$coefficients[2]        #Record b1 from model on simulated data
+bootstrap_sigma[i] <- summary(Mb)$sigma      #Record sigma from model on simulated data
 }
 Bootstrap_Results <- data.frame(bootstrap_b0, bootstrap_b1, bootstrap_sigma)
 
@@ -366,7 +375,7 @@ Our first model gives us the relationship between fouls on the home team and the
 
 # Conclusions:
 
-Parametric Bootstrapping is useful for generating simulated data from model estimates to solve problems that occur to dataset size, issues with assumptions, or comparing models. This method of bootstrapping can be used on various different types of models. In this report we use this method on linear regression models, generalized linear models, and models with a lack of data. In all instances parametric bootstrapping is useful for being able to generate additional data to increase the confidence in estimates relevant statistics, like chi squared and f-statistic. One of the more useful ways to use parametric bootstrapping is by using it to generate additional data to test various models to see which one is more useful for explaining a given dataset. We used this in all three of our examples and then used parametric bootstrapping to estimate the f-statistic and chi squared values. Parametric bootstrapping is very useful for generating additional data to be able to make a conclusive argument for a hypothesis or finding.
+Parametric Bootstrapping is useful for generating simulated data from model estimates to solve problems that occur due to dataset size, issues with assumptions, or comparing models. This method of bootstrapping can be used on various different types of models. In this report we use this method on linear regression models, generalized linear models, and models with a lack of data. In all instances parametric bootstrapping is useful for being able to generate additional data to increase the confidence in estimates relevant statistics, like chi squared and f-statistic. One of the more useful ways to use parametric bootstrapping is by using it to generate additional data to test various models to see which one is more useful for explaining a given dataset. We used this in all three of our examples and then used parametric bootstrapping to estimate the f-statistic and chi squared values. Parametric bootstrapping is very useful when we believe in the model, but do not believe in the standard error formulas. This is because parametric bootstrapping assumes that our simulated values follow a normal distribution because the data is based on a model. Non-parametric bootstrapping is useful when we believe in the standard error formulas, but not the model. This does not assume a normal distribution because we are generating our data by sampling with replacement. Overall, bootstrapping can be very useful when we doubt our confidence intervals, do not have enough data, or have doubts about model assumptions. But, parametric bootstrapping provides another way to fix these problems when we believe in our model and want to have our simulated data follow a normal distribution.
 
 # References: 
 
